@@ -3,4 +3,4 @@ fixtures:
     "bigmatch": "#{source_dir}"
   repositories:
     stdlib: "http://github.com/puppetlabs/puppetlabs-stdlib.git"
-    iop: "http://github.com/jstuart/jstuart-stdlib.git"
+    iop: "http://github.com/jstuart/jstuart-iop.git"
