@@ -1,0 +1,27 @@
+{
+  "author": "James Stuart",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">=4.0.0 <5.0.0"
+    },
+    {
+      "name": "jstuart/iop",
+      "version_requirement": ">=0.1.0"
+    }
+  ],
+  "license": "MIT License",
+  "name": "jstuart-bigmatch",
+  "operatingsystem_support": [
+    {
+      "operatingsystem":"RedHat",
+      "operatingsystemrelease":[ "6.0" ]
+    }
+  ],
+  "project_page": "https://github.com/jstuart/puppet-bigmatch",
+  "requirements": [],
+  "source": "https://github.com/jstuart/puppet-bigmatch",
+  "summary": "Module to manage the deployment of IBM Big Match for Hadoop on IBM Open Platform with Apache Hadoop.",
+  "tags": ["ibm", "biginsights", "hadoop", "iop", "bigmatch"],
+  "version": "0.1.0"
+}
