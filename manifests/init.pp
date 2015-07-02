@@ -30,6 +30,33 @@
 #                                  Defaults to true.
 #                                  type:boolean
 #
+# $bigmatch_console_support::      Flag that instructs this module to download
+#                                  the non-RPM packages required by Big Match
+#                                  Console.  Apache Derby will be installed to
+#                                  /opt/bigmatch-support/db-derby-current-bin
+#                                  and the IBM WLP Runtime will be installed to
+#                                  /opt/bigmatch-support/wlp/wlp-runtime-current.jar
+#                                  Defaults to false.
+#                                  type:boolean
+#
+# $bigmatch_ensure_package_deps::  Flag that causes this module to install the
+#                                  upstream package dependencies that really
+#                                  should be required by the actual Big Match
+#                                  RPM.
+#                                  Defaults to true.
+#                                  type:boolean
+#
+# $bigmatch_ambari_rpm_uri::       The URI of the RPM that will install the
+#                                  appropriate Ambari Server metadata for
+#                                  Big Match into the IOP stack. This will only
+#                                  execute on servers for which $iop::ambari_server
+#                                  has a value of true. Note that this is not
+#                                  provided by IBM.  You need to convert the
+#                                  tarball into an RPM yourself.
+#                                  Defaults to an empty string, disabling this
+#                                  feature. 
+#                                  type:string
+#
 # Actions:
 #
 # Requires: see Modulefile
@@ -44,10 +71,21 @@ class bigmatch (
   $bigmatch_repo_uri = undef,
   $bigmatch_repo_gpgcheck = true,
   $bigmatch_repo_sslverify = true,
+  $bigmatch_console_support = false,
+  $bigmatch_ensure_package_deps = true,
+  $bigmatch_ambari_rpm_uri = '',
 ) {
-  validate_string($bigmatch_repo_uri)
-  validate_bool($bigmatch_repo_gpgcheck)
-  validate_bool($bigmatch_repo_sslverify)
+  validate_string($bigmatch::bigmatch_repo_uri)
+  validate_bool($bigmatch::bigmatch_repo_gpgcheck)
+  validate_bool($bigmatch::bigmatch_repo_sslverify)
+  validate_bool($bigmatch::bigmatch_console_support)
+  validate_bool($bigmatch::bigmatch_ensure_package_deps)
+  validate_string($bigmatch::bigmatch_ambari_rpm_uri)
+
+  if $bigmatch_ensure_package_deps == true {
+    # These should really just be required by the Big Match RPM...
+    ensure_packages(['libxml2', 'libxslt'])
+  }
   
   # Add the BigMatch repo to Ambari
   iop::ambari::repo { 'bigmatch':
@@ -57,5 +95,22 @@ class bigmatch (
     gpgcheck  => $bigmatch::bigmatch_repo_gpgcheck,
     sslverify => $bigmatch::bigmatch_repo_sslverify,
     order     => '30'
+  }
+  
+  if $bigmatch::bigmatch_ambari_rpm_uri != '' {
+    if hiera('iop::ambari_server', $iop::ambari_server) == true {
+      package { 'bigmatch-ambari-stack-iop':
+        ensure   => installed,
+        provider => 'rpm',
+        source   => $bigmatch::bigmatch_ambari_rpm_uri,
+        require  => Package['ambari-server'],
+        notify   => Service['ambari-server'],
+      }
+    }
+  }
+  
+  if $bigmatch::bigmatch_console_support == true {
+    include bigmatch::support::derby
+    include bigmatch::support::wlp
   }
 }
