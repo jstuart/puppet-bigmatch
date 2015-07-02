@@ -7,7 +7,7 @@ class bigmatch::support::wlp (
   
   validate_re($wlp_runtime_uri, '\/wlp-runtime-[A-Za-z0-9-_.]+\.jar$', "Invalid WLP Runtime URI: \$wlp_runtime_uri='${wlp_runtime_uri}'; URI must end in a file that matches the pattern wlp-runtime-[version].jar")
 
-  $source_file = regsubst($wlp_runtime_uri, '^.*\/\(wlp-runtime-.*\.jar\)$','\1')
+  $source_file = regsubst($wlp_runtime_uri, '^.*\/(wlp-runtime-.*\.jar)$','\1')
   $dest_file = $bigmatch::params::wlp_linkfile
 
   file { $bigmatch::params::wlp_basedir:
@@ -25,9 +25,9 @@ class bigmatch::support::wlp (
     user        => 'root',
     umask       => '022',
     environment => [
-      "URI='${wlp_runtime_uri}'",
-      "SOURCE_FILE='${source_file}'",
-      "DEST_FILE='${dest_file}'",
+      "URI=${wlp_runtime_uri}",
+      "SOURCE_FILE=${source_file}",
+      "DEST_FILE=${dest_file}",
     ],
     creates     => "${bigmatch::params::wlp_basedir}/${source_file}",
     require     => File[$bigmatch::params::wlp_basedir],
