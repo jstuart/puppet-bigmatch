@@ -111,8 +111,9 @@ class bigmatch (
   
   if $bigmatch::bigmatch_ambari_rpm_uri != '' {
     iop::ambari::addon { 'bigmatch-ambari-stack-iop':
-      ensure  => installed,
-      rpm_uri => $bigmatch::bigmatch_ambari_rpm_uri,
+      ensure       => installed,
+      package_name => 'bigmatch-ambari-stack-iop',
+      rpm_uri      => $bigmatch::bigmatch_ambari_rpm_uri,
     }
   }
   
