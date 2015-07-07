@@ -57,6 +57,16 @@
 #                                  feature. 
 #                                  type:string
 #
+# $bigmatch_sudoers_hack::         Flag that causes the installation of a file
+#                                  in sudoers.d permitting sudo by root without 
+#                                  a TTY.  This should NOT be enabled in a
+#                                  production environment. Hopefully the need
+#                                  for this hack, commands prefixed with sudo
+#                                  within the Big Match installer, will be 
+#                                  addressed in future releases of the software.
+#                                  Defaults to false.
+#                                  type:boolean
+#
 # Actions:
 #
 # Requires: see Modulefile
@@ -74,6 +84,7 @@ class bigmatch (
   $bigmatch_console_support = false,
   $bigmatch_ensure_package_deps = true,
   $bigmatch_ambari_rpm_uri = '',
+  $bigmatch_sudoers_hack = false
 ) {
   validate_string($bigmatch::bigmatch_repo_uri)
   validate_bool($bigmatch::bigmatch_repo_gpgcheck)
@@ -81,6 +92,7 @@ class bigmatch (
   validate_bool($bigmatch::bigmatch_console_support)
   validate_bool($bigmatch::bigmatch_ensure_package_deps)
   validate_string($bigmatch::bigmatch_ambari_rpm_uri)
+  validate_bool($bigmatch::bigmatch_sudoers_hack)
 
   if $bigmatch_ensure_package_deps == true {
     # These should really just be required by the Big Match RPM...
@@ -107,5 +119,15 @@ class bigmatch (
   if $bigmatch::bigmatch_console_support == true {
     include bigmatch::support::derby
     include bigmatch::support::wlp
+  }
+  
+  if $bigmatch::bigmatch_sudoers_hack == true {
+    file { '/etc/sudoers.d/bigmatch-hack':
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => template("${module_name}/etc/sudoers.d/bigmatch-hack.erb"),
+    }
   }
 }
