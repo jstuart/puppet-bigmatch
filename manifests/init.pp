@@ -98,14 +98,9 @@ class bigmatch (
   }
   
   if $bigmatch::bigmatch_ambari_rpm_uri != '' {
-    if hiera('iop::ambari_server', $iop::ambari_server) == true {
-      package { 'bigmatch-ambari-stack-iop':
-        ensure   => installed,
-        provider => 'rpm',
-        source   => $bigmatch::bigmatch_ambari_rpm_uri,
-        require  => Package['ambari-server'],
-        notify   => Service['ambari-server'],
-      }
+    iop::ambari::addon { 'bigmatch-ambari-stack-iop':
+      ensure  => installed,
+      rpm_uri => $bigmatch::bigmatch_ambari_rpm_uri,
     }
   }
   
