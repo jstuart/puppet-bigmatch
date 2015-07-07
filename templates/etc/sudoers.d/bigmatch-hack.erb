@@ -1,0 +1,7 @@
+# This file is managed by Puppet (<%= @module_name %>)
+#
+# Note: this is a hack around commands that are prefixed with sudo inside the
+# Big Match installer.  This should NOT be used in a production environment.
+# Hopefully future releases will address this issue.
+
+Defaults: root !requiretty
